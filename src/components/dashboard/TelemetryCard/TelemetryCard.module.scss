@@ -1,0 +1,151 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+@use '../../../styles/animations';
+
+// ─── Card Container ─────────────────────────────────────────────────────────
+
+.card {
+  @include terminal-border;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  min-height: 120px;
+}
+
+// ─── Header ─────────────────────────────────────────────────────────────────
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.label {
+  font-family: $font-code;
+  font-size: 0.7rem;
+  color: rgba($color-primary, 0.6);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.value {
+  font-family: $font-display;
+  font-size: 1.6rem;
+  color: $color-primary;
+  line-height: 1;
+
+  &.warning { color: $color-warning; }
+  &.critical {
+    color: $color-alert;
+    animation: pulse-glow 1.5s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+}
+
+// ─── Body ───────────────────────────────────────────────────────────────────
+
+.body {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+}
+
+// ─── CPU Chart ──────────────────────────────────────────────────────────────
+
+.cpuChart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 48px;
+  width: 100%;
+}
+
+.cpuBar {
+  flex: 1;
+  background: rgba($color-primary, 0.4);
+  min-width: 4px;
+  transition: height 0.3s ease;
+
+  // Barra atual (index 7 — via stateClass aplicado externamente)
+  &.warning { background: rgba($color-warning, 0.7); }
+  &.critical { background: rgba($color-alert, 0.7); }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// ─── Memory Bar ─────────────────────────────────────────────────────────────
+
+.memoryTrack {
+  width: 100%;
+  height: 12px;
+  background: rgba($color-primary, 0.1);
+  border: 1px solid rgba($color-primary, 0.2);
+  overflow: hidden;
+}
+
+.memoryFill {
+  height: 100%;
+  background: $color-primary;
+  transition: width 0.4s ease;
+
+  &.warning  { background: $color-warning; }
+  &.critical { background: $color-alert; }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// ─── Disk Pie ───────────────────────────────────────────────────────────────
+
+.diskPie {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%; // Exceção intencional — pie chart circular
+  background: conic-gradient(
+    $color-primary 0deg var(--pie-angle),
+    rgba($color-primary, 0.1) var(--pie-angle) 360deg
+  );
+  transition: background 0.4s ease;
+
+  &.warning {
+    background: conic-gradient(
+      $color-warning 0deg var(--pie-angle),
+      rgba($color-warning, 0.1) var(--pie-angle) 360deg
+    );
+  }
+
+  &.critical {
+    background: conic-gradient(
+      $color-alert 0deg var(--pie-angle),
+      rgba($color-alert, 0.1) var(--pie-angle) 360deg
+    );
+    animation: pulse-glow-box 1.5s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    transition: none;
+    &.critical { animation: none; } // sem isto, .diskPie.critical tem especificidade maior
+  }
+}
+
+// ─── Footer ─────────────────────────────────────────────────────────────────
+
+.footer {
+  font-family: $font-code;
+  font-size: 0.65rem;
+  color: rgba($color-primary, 0.5);
+  letter-spacing: 0.05em;
+}
+
+// ─── State modifiers ────────────────────────────────────────────────────────
+
+.warning { color: $color-warning; }
+.critical { color: $color-alert; }

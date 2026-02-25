@@ -1,0 +1,117 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/animations';
+
+.state {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-6 $space-4;
+}
+
+.stateText {
+  font-family: $font-code;
+  font-size: 0.875rem;
+  color: $color-primary-dim;
+}
+
+.cursor {
+  font-family: $font-code;
+  font-size: 1rem;
+  color: $color-primary;
+  animation: blink 1s step-end infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.errorText {
+  font-family: $font-code;
+  font-size: 0.875rem;
+  color: $color-alert;
+}
+
+.errorDetail {
+  font-family: $font-code;
+  font-size: 0.75rem;
+  color: rgba(255, 51, 51, 0.7);
+}
+
+.sectionTitle {
+  font-family: $font-code;
+  font-size: 0.75rem;
+  color: $color-primary-dim;
+  letter-spacing: 0.1em;
+  margin: 0 0 $space-3;
+  padding: $space-4 $space-4 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: $font-code;
+  font-size: 0.875rem;
+}
+
+.th {
+  text-align: left;
+  padding: $space-2 $space-4;
+  color: $color-primary-dim;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid $color-primary-dim;
+  font-weight: normal;
+}
+
+.row {
+  border-bottom: 1px solid rgba(13, 242, 13, 0.08);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba(13, 242, 13, 0.03);
+  }
+}
+
+.fileName {
+  padding: $space-3 $space-4;
+  color: $color-primary;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ttl {
+  padding: $space-3 $space-4;
+  color: $color-primary-dim;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+%badge {
+  display: inline-block;
+  padding: 0 $space-2;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+
+.badgeActive {
+  @extend %badge;
+  color: $color-primary;
+  border: 1px solid $color-primary;
+}
+
+.badgeExpired {
+  @extend %badge;
+  color: $color-alert;
+  border: 1px solid $color-alert;
+}
+
+.badgeFileRemoved {
+  @extend %badge;
+  color: $color-warning;
+  border: 1px solid $color-warning;
+}

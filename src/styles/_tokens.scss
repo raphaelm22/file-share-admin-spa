@@ -1,0 +1,35 @@
+// ─── Colors ─────────────────────────────────────────────────
+$color-primary:     #0df20d;
+$color-primary-dim: #005F1B;
+$color-alert:       #FF3333;
+$color-warning:     #FFB000;
+$color-background:  #0D0D0D;
+$color-surface:     #1A1A1A;
+$color-white:       #FFFFFF;
+
+// ─── Fonts ──────────────────────────────────────────────────
+$font-display:  'VT323', monospace;
+$font-code:     'Fira Code', monospace;
+$font-heading:  'Space Grotesk', sans-serif;
+
+// ─── Layout ─────────────────────────────────────────────────
+$border-radius: 0px; // Intentional — no border-radius anywhere in the project
+
+// ─── Glow presets (static) — see _mixins.scss for parametric versions
+$glow-primary: 0 0 8px rgba(13, 242, 13, 0.3);
+$glow-strong:  0 0 15px rgba(13, 242, 13, 0.5);
+
+// ─── Spacing (4px base) ────────────────────────────────────
+$space-1:  4px;
+$space-2:  8px;
+$space-3:  12px;
+$space-4:  16px;
+$space-6:  24px;
+$space-8:  32px;
+$space-12: 48px;
+
+// ─── Breakpoints ────────────────────────────────────────────
+$bp-mobile:  375px;
+$bp-tablet:  768px;
+$bp-desktop: 1024px;
+$bp-wide:    1280px;

@@ -1,0 +1,49 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+// ─── Tree Container ───────────────────────────────────────────────────────────
+
+.tree {
+  font-family: $font-code;
+  background: $color-background;
+  padding: $space-2;
+  overflow-y: auto;
+}
+
+// ─── Directory Node Row ───────────────────────────────────────────────────────
+
+.node {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-1 $space-2;
+  cursor: pointer;
+  color: $color-primary;
+  font-size: 0.875rem;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba($color-primary, 0.08);
+  }
+}
+
+// ─── Selected State ───────────────────────────────────────────────────────────
+
+.selected {
+  background: $color-primary;
+  color: $color-background;
+
+  &:hover {
+    background: $color-primary;
+  }
+}
+
+// ─── Toggle Icon ──────────────────────────────────────────────────────────────
+
+.toggle {
+  display: inline-block;
+  width: 1em;
+  text-align: center;
+  user-select: none;
+  flex-shrink: 0;
+}

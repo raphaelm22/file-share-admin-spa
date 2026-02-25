@@ -1,0 +1,58 @@
+@use '../../../styles/tokens' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.label {
+  font-family: $font-code;
+  font-size: 0.75rem;
+  color: $color-primary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $space-2;
+}
+
+.button,
+.buttonSelected {
+  font-family: $font-code;
+  font-size: 0.875rem;
+  padding: $space-2 $space-3;
+  border: 1px solid rgba(13, 242, 13, 0.4);
+  background: transparent;
+  color: $color-primary;
+  cursor: pointer;
+  transition: background 150ms ease;
+
+  &:hover {
+    background: rgba(13, 242, 13, 0.1);
+  }
+
+  &:focus-visible {
+    outline: 1px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+.buttonSelected {
+  background: $color-primary;
+  color: $color-background;
+  border-color: $color-primary;
+
+  &:hover {
+    background: $color-primary;
+  }
+}
+
+.hint {
+  font-family: $font-code;
+  font-size: 0.75rem;
+  color: rgba(13, 242, 13, 0.6);
+}

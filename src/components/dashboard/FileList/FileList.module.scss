@@ -1,0 +1,72 @@
+@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
+@use '../../../styles/animations';
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-4;
+  padding: $space-12 $space-6;
+  text-align: center;
+}
+
+.stateText {
+  font-family: $font-code;
+  font-size: 0.875rem;
+  color: $color-primary-dim;
+  letter-spacing: 0.08em;
+}
+
+.cursor {
+  display: inline-block;
+  color: $color-primary;
+  animation: blink 1s step-end infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.errorText {
+  font-family: $font-code;
+  font-size: 0.875rem;
+  color: $color-alert;
+  letter-spacing: 0.08em;
+}
+
+.errorDetail {
+  font-family: $font-code;
+  font-size: 0.75rem;
+  color: rgba($color-alert, 0.7);
+}
+
+.monitoring {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-family: $font-code;
+  font-size: 0.75rem;
+  color: $color-primary-dim;
+  letter-spacing: 0.08em;
+}
+
+.monitoringDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $color-primary;
+  animation: pulse-glow 2s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  @include terminal-border;
+}

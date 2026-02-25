@@ -1,0 +1,17 @@
+@use '../../../styles/tokens' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4;
+  border: 1px solid rgba(13, 242, 13, 0.2);
+}
+
+.instruction {
+  font-family: $font-code;
+  font-size: 0.75rem;
+  color: rgba(13, 242, 13, 0.6);
+  letter-spacing: 0.1em;
+}
