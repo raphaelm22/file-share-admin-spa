@@ -38,8 +38,8 @@ function FileRow({ file, isShared, onShare }: FileRowProps) {
         <span className={styles.typeTag}>[FILE]</span>
         <span className={styles.fileName}>{file.fileName}</span>
         {isShared
-          ? <span className={styles.sharedBadge} aria-label="Arquivo compartilhado ativamente">SHARED_ACTIVE</span>
-          : <span aria-hidden="true" />
+          ? <span className={`${styles.badgeSlot} ${styles.sharedBadge}`} aria-label="Arquivo compartilhado ativamente">SHARED_ACTIVE</span>
+          : <span className={styles.badgeSlot} aria-hidden="true" />
         }
         <span className={styles.fileSize}>{formatFileSize(file.fileSize)}</span>
         <span className={styles.modifiedAt}>{formatDate(file.modifiedAt)}</span>
