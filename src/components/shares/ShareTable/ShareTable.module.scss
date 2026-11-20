@@ -78,10 +78,9 @@
 .fileName {
   padding: $space-3 $space-4;
   color: $color-primary;
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  // Whole name visible: wrap instead of truncating
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .ttl {
