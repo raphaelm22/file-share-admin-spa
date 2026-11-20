@@ -1,14 +1,60 @@
 name: Build and Push Docker Image
 
 on:
+  pull_request:
   push:
     branches: [main]
 
 env:
   IMAGE_NAME: ghcr.io/raphaelm22/file-share-admin-spa
+  # Override in repo settings → Variables if the public domain changes
+  PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL || 'https://fileshare.raphaelm22.net' }}
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npx vitest run
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build image (amd64, local)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: admin-spa:ci
+          build-args: VITE_PUBLIC_BASE_URL=${{ env.PUBLIC_BASE_URL }}
+
+      - name: nginx config + access smoke test
+        run: |
+          set -eu
+          docker run -d --name spa -p 8080:80 admin-spa:ci
+          sleep 2
+          docker exec spa nginx -t
+          check() { exp=$1; desc=$2; shift 2
+            got=$(curl -s -o /dev/null -w '%{http_code}' "$@")
+            echo "$desc → $got (expected $exp)"; [ "$got" = "$exp" ]; }
+          check 200 "LAN client"                      http://localhost:8080/
+          check 403 "public IP forwarded by proxy"    -H 'X-Real-IP: 8.8.8.8' http://localhost:8080/
+          check 403 "public IP on API"                -H 'X-Real-IP: 8.8.8.8' http://localhost:8080/api/v1/files
+          check 502 "API proxied (no backend in CI)"  http://localhost:8080/api/v1/files
+          check 502 "hub negotiate proxied (was 405)" -X POST http://localhost:8080/hubs/fileshare/negotiate
+          docker exec spa sh -c 'cat /usr/share/nginx/html/assets/*.js' | grep -q "$PUBLIC_BASE_URL"
+
   build-and-push:
+    needs: test
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -42,3 +88,4 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: VITE_PUBLIC_BASE_URL=${{ env.PUBLIC_BASE_URL }}
