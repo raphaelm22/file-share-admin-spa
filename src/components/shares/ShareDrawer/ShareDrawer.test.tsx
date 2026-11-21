@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import ShareDrawer from './ShareDrawer'
 import * as api from '../../../api'
-import type { FileEntry, Share } from '../../../types'
+import type { CreatedShare, FileEntry } from '../../../types'
 
 vi.mock('focus-trap-react', () => ({
   FocusTrap: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -17,7 +17,7 @@ const mockFile: FileEntry = {
   directory: '',
 }
 
-const mockShare: Share = {
+const mockShare: CreatedShare = {
   id: 'abc123',
   token: 'deadbeef'.repeat(8),
   fileName: 'file.pdf',

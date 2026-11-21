@@ -4,7 +4,7 @@ import TerminalHeader from './components/primitives/TerminalHeader/TerminalHeade
 import FileList from './components/dashboard/FileList/FileList'
 import ShareDrawer from './components/shares/ShareDrawer/ShareDrawer'
 import ShareTable from './components/shares/ShareTable/ShareTable'
-import { fetchFiles, fetchShares, fetchSystemStats, fetchDirectoryTree } from './api'
+import { fetchFiles, fetchShares, fetchSystemStats, fetchDirectoryTree, revokeShare } from './api'
 import { useSignalR, type ConnectionStatus } from './hooks/useSignalR'
 import type { FileEntry, ShareWithStatus, SystemStats } from './types'
 import { TelemetryCard } from './components/dashboard/TelemetryCard/TelemetryCard'
@@ -90,6 +90,11 @@ function App(): ReactElement {
     [files, selectedPath]
   )
 
+  async function handleRevoke(id: string) {
+    await revokeShare(id)
+    setShares(prev => prev.filter(s => s.id !== id))
+  }
+
   useSignalR({
     onFileAdded: (entry) => setFiles(prev => {
       if (prev.some(f => f.fileName === entry.fileName)) return prev
@@ -99,8 +104,8 @@ function App(): ReactElement {
       prev.filter(f => f.fileName !== fileName)
     ),
     onStatusChange: setConnectionStatus,
-    onShareExpired: ({ token }) => setShares(prev =>
-      prev.map(s => s.token === token ? { ...s, status: 'expired' as const } : s)
+    onShareExpired: ({ id }) => setShares(prev =>
+      prev.map(s => s.id === id ? { ...s, status: 'expired' as const } : s)
     ),
     onSystemStats: setSystemStats,
   })
@@ -148,7 +153,7 @@ function App(): ReactElement {
             />
           </div>
         </div>
-        <ShareTable shares={shares} loading={sharesLoading} error={sharesError} />
+        <ShareTable shares={shares} loading={sharesLoading} error={sharesError} onRevoke={handleRevoke} />
       </main>
       {sharingFile && (
         <ShareDrawer file={sharingFile} onClose={() => setSharingFile(null)} />

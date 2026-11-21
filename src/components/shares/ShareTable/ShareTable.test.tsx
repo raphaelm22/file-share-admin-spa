@@ -1,11 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import ShareTable from './ShareTable'
 import type { ShareWithStatus } from '../../../types'
 
 const mockShares: ShareWithStatus[] = [
   {
     id: 'share-1',
-    token: 'abc123',
     fileName: 'document.pdf',
     fileSize: 1024,
     expiresAt: null,
@@ -14,7 +13,6 @@ const mockShares: ShareWithStatus[] = [
   },
   {
     id: 'share-2',
-    token: 'def456',
     fileName: 'image.png',
     fileSize: 2048,
     expiresAt: '2026-02-25T08:00:00Z',
@@ -82,7 +80,6 @@ describe('ShareTable', () => {
     // Arrange
     const removedShare: ShareWithStatus[] = [{
       id: 'share-3',
-      token: 'ghi789',
       fileName: 'deleted.zip',
       fileSize: 512,
       expiresAt: null,
@@ -93,5 +90,44 @@ describe('ShareTable', () => {
 
     // Assert
     expect(screen.getByText('FILE_REMOVED')).toBeInTheDocument()
+  })
+
+  it('não mostra o botão de revogar sem onRevoke', () => {
+    render(<ShareTable shares={mockShares} loading={false} error={null} />)
+
+    expect(screen.queryByRole('button', { name: /Revogar/ })).not.toBeInTheDocument()
+  })
+
+  it('revoga só depois da confirmação (dois cliques)', async () => {
+    // Arrange
+    const onRevoke = vi.fn().mockResolvedValue(undefined)
+    render(<ShareTable shares={mockShares} loading={false} error={null} onRevoke={onRevoke} />)
+
+    // Act: primeiro clique só arma
+    fireEvent.click(screen.getByRole('button', { name: 'Revogar link de document.pdf' }))
+
+    // Assert
+    expect(onRevoke).not.toHaveBeenCalled()
+    const confirm = screen.getByRole('button', { name: 'Confirmar revogação de document.pdf' })
+    expect(confirm).toHaveTextContent('CONFIRM?')
+
+    // Act: segundo clique revoga
+    fireEvent.click(confirm)
+
+    // Assert
+    await waitFor(() => expect(onRevoke).toHaveBeenCalledWith('share-1'))
+  })
+
+  it('mostra FAILED quando a revogação falha', async () => {
+    // Arrange
+    const onRevoke = vi.fn().mockRejectedValue(new Error('HTTP 500'))
+    render(<ShareTable shares={mockShares} loading={false} error={null} onRevoke={onRevoke} />)
+
+    // Act
+    fireEvent.click(screen.getByRole('button', { name: 'Revogar link de image.png' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmar revogação de image.png' }))
+
+    // Assert
+    expect(await screen.findByRole('alert')).toHaveTextContent('FAILED')
   })
 })
