@@ -8,7 +8,7 @@ interface UseSignalROptions {
   onFileAdded: (entry: FileEntry) => void
   onFileRemoved: (payload: { fileName: string }) => void
   onStatusChange: (status: ConnectionStatus) => void
-  onShareExpired?: (payload: { token: string; fileName: string }) => void
+  onShareExpired?: (payload: { id: string; fileName: string }) => void
   onSystemStats?: (stats: SystemStats) => void
 }
 
@@ -34,7 +34,7 @@ export function useSignalR({ onFileAdded, onFileRemoved, onStatusChange, onShare
 
     connection.on('FileAdded', (entry: FileEntry) => onFileAddedRef.current(entry))
     connection.on('FileRemoved', (payload: { fileName: string }) => onFileRemovedRef.current(payload))
-    connection.on('ShareExpired', (payload: { token: string; fileName: string }) => onShareExpiredRef.current?.(payload))
+    connection.on('ShareExpired', (payload: { id: string; fileName: string }) => onShareExpiredRef.current?.(payload))
     connection.on('SystemStats', (stats: SystemStats) => onSystemStatsRef.current?.(stats))
 
     connection.onreconnecting(() => onStatusChangeRef.current('reconnecting'))

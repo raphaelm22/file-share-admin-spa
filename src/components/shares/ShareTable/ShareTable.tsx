@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { ShareWithStatus } from '../../../types'
 import styles from './ShareTable.module.scss'
 
@@ -5,6 +6,7 @@ interface ShareTableProps {
   shares: ShareWithStatus[]
   loading: boolean
   error: string | null
+  onRevoke?: (id: string) => Promise<void>
 }
 
 function formatTTLRemaining(expiresAt: string | null): string {
@@ -24,7 +26,30 @@ const STATUS_CLASS: Record<ShareWithStatus['status'], string> = {
   'file-removed': styles.badgeFileRemoved,
 }
 
-function ShareTable({ shares, loading, error }: ShareTableProps) {
+function ShareTable({ shares, loading, error, onRevoke }: ShareTableProps) {
+  // Two-step revoke: the first click arms the row, the second one deletes the share
+  const [armedId, setArmedId] = useState<string | null>(null)
+  const [busyId, setBusyId] = useState<string | null>(null)
+  const [failedId, setFailedId] = useState<string | null>(null)
+
+  async function handleRevokeClick(id: string) {
+    if (!onRevoke) return
+    if (armedId !== id) {
+      setArmedId(id)
+      setFailedId(null)
+      return
+    }
+    setBusyId(id)
+    try {
+      await onRevoke(id)
+      setArmedId(null)
+    } catch {
+      setFailedId(id)
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   if (loading) {
     return (
       <div className={styles.state}>
@@ -60,20 +85,48 @@ function ShareTable({ shares, loading, error }: ShareTableProps) {
             <th scope="col" className={styles.th}>FILE</th>
             <th scope="col" className={styles.th}>TTL_REMAINING</th>
             <th scope="col" className={styles.th}>STATUS</th>
+            {onRevoke && (
+              <th scope="col" className={styles.th}>
+                <span className={styles.srOnly}>Ações</span>
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
-          {shares.map(share => (
-            <tr key={share.id} className={styles.row}>
-              <td className={styles.fileName}>{share.fileName}</td>
-              <td className={styles.ttl}>{formatTTLRemaining(share.expiresAt)}</td>
-              <td>
-                <span className={STATUS_CLASS[share.status]}>
-                  {share.status.toUpperCase().replace('-', '_')}
-                </span>
-              </td>
-            </tr>
-          ))}
+          {shares.map(share => {
+            const armed = armedId === share.id
+            const busy = busyId === share.id
+            return (
+              <tr key={share.id} className={styles.row}>
+                <td className={styles.fileName}>{share.fileName}</td>
+                <td className={styles.ttl}>{formatTTLRemaining(share.expiresAt)}</td>
+                <td>
+                  <span className={STATUS_CLASS[share.status]}>
+                    {share.status.toUpperCase().replace('-', '_')}
+                  </span>
+                </td>
+                {onRevoke && (
+                  <td className={styles.actions}>
+                    <button
+                      type="button"
+                      className={armed ? styles.revokeArmed : styles.revoke}
+                      onClick={() => handleRevokeClick(share.id)}
+                      onBlur={() => { if (armed && !busy) setArmedId(null) }}
+                      disabled={busy}
+                      aria-label={armed
+                        ? `Confirmar revogação de ${share.fileName}`
+                        : `Revogar link de ${share.fileName}`}
+                    >
+                      {busy ? 'REVOKING...' : armed ? 'CONFIRM?' : 'REVOKE'}
+                    </button>
+                    {failedId === share.id && (
+                      <span role="alert" className={styles.revokeError}>FAILED</span>
+                    )}
+                  </td>
+                )}
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </section>

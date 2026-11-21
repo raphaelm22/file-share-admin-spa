@@ -1,4 +1,4 @@
-import type { FileEntry, Share, ShareWithStatus, SystemStats } from './types'
+import type { CreatedShare, FileEntry, ShareWithStatus, SystemStats } from './types'
 import type { DirectoryNode } from './types/directory'
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -24,7 +24,7 @@ export async function fetchDirectoryTree(): Promise<DirectoryNode> {
   return data.root
 }
 
-export async function createShare(filePath: string, ttlHours: number | null): Promise<Share> {
+export async function createShare(filePath: string, ttlHours: number | null): Promise<CreatedShare> {
   const response = await fetch('/api/v1/shares', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -34,5 +34,11 @@ export async function createShare(filePath: string, ttlHours: number | null): Pr
     const problem = await response.json() as { detail?: string }
     throw new Error(problem.detail ?? `HTTP ${response.status}`)
   }
-  return response.json() as Promise<Share>
+  return response.json() as Promise<CreatedShare>
+}
+
+export async function revokeShare(id: string): Promise<void> {
+  const response = await fetch(`/api/v1/shares/${encodeURIComponent(id)}`, { method: 'DELETE' })
+  // 404 = already gone (expired and cleaned up, or revoked elsewhere): same end state
+  if (!response.ok && response.status !== 404) throw new Error(`HTTP ${response.status}`)
 }

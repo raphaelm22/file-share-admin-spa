@@ -114,3 +114,56 @@
   color: $color-warning;
   border: 1px solid $color-warning;
 }
+
+.actions {
+  padding: $space-3 $space-4;
+  text-align: right;
+  white-space: nowrap;
+}
+
+%revokeButton {
+  font: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  padding: 0 $space-2;
+  background: transparent;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.6;
+  }
+}
+
+.revoke {
+  @extend %revokeButton;
+  color: $color-primary-dim;
+  border: 1px solid $color-primary-dim;
+
+  &:hover,
+  &:focus-visible {
+    color: $color-alert;
+    border-color: $color-alert;
+  }
+}
+
+.revokeArmed {
+  @extend %revokeButton;
+  color: $color-alert;
+  border: 1px solid $color-alert;
+}
+
+.revokeError {
+  margin-left: $space-2;
+  color: $color-alert;
+  font-size: 0.7rem;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

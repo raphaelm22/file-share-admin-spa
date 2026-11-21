@@ -8,11 +8,16 @@ export interface FileEntry {
 
 export interface Share {
   id: string
-  token: string
   fileName: string
   fileSize: number
   expiresAt: string | null // ISO 8601 UTC, null = TTL infinito
   createdAt: string        // ISO 8601 UTC
+}
+
+// Only the create response carries the token: the server stores just its hash, so the link
+// can be shown once and never fetched again.
+export interface CreatedShare extends Share {
+  token: string
 }
 
 export interface ShareWithStatus extends Share {
